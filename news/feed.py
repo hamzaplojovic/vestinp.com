@@ -58,6 +58,23 @@ def sandzakhaber_net():
     
     return content
 
+def rtvnp_rs():
+    rss_url = 'https://rtvnp.rs/feed/'
+    parsed_feed = feedparser.parse(rss_url)
+    print(parsed_feed.entries[0])
+    content = []
+    for article in parsed_feed.entries:
+        data = {
+            'url': article['link'],
+            'title': article['title'],
+            'short_summary': article['summary'],
+            # TODO: add adjust for multiple content (index 0,1,2..)
+            'description': article['content'][0]['value'],
+            'views': 'TODO'
+        }
+        content.append(data)
+    
+    return content
 # utils
 
 # function get views (for article)
@@ -73,8 +90,13 @@ def sandzakpress_net_views(article_id):
 
 
 if __name__ == '__main__':
-    t = sandzaklive_rs()
-    print(t[1]['views'])
+    # t = rtvnp_rs()
+    # print(t[1]['views'])
     # print(t[0]['description'])
-
+    payload = {
+    'action': 'td_ajax_views',
+    'td_post_ids': f'[130488]'
+    }
+    r = requests.post('https://rtvnp.rs/wp-admin/admin-ajax.php', data=payload)
     
+    print(r.text)
