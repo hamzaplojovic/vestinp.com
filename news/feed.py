@@ -36,7 +36,7 @@ def sandzaklive_rs():
             'short_summary': article['summary'],
             # TODO: add adjust for multiple content (index 0,1,2..)
             'description': article['content'][0]['value'],
-            'views': article['post-id']
+            'views': sandzalive_rs_views(article['link'])
         }
         content.append(data)
 
@@ -64,7 +64,6 @@ def sandzaklive_rs():
 def rtvnp_rs():
     rss_url = 'https://rtvnp.rs/feed/'
     parsed_feed = feedparser.parse(rss_url)
-    print(parsed_feed.entries[0])
     content = []
     for article in parsed_feed.entries:
         data = {
@@ -73,7 +72,7 @@ def rtvnp_rs():
             'short_summary': article['summary'],
             # TODO: add adjust for multiple content (index 0,1,2..)
             'description': article['content'][0]['value'],
-            'views': 'TODO'
+            'views': rtvnp_rs_views(article['link'])
         }
         content.append(data)
 
@@ -108,9 +107,4 @@ def rtvnp_rs_views(link):
     return views.split()[0]
 
 if __name__ == '__main__':
-    # t = sandzakhaber_net()
-    # print(t[0])
-    # print(t[1]['views'])
-    # print(t[0]['description'])
-    # print(rtvnp_rs_views('https://rtvnp.rs/2022/06/08/anonimni-donator-kupio-kravu-sacirovicima/130538'))
-    print(sandzakhaber_net_views('https://sandzakhaber.net/ruzic-sa-saradnicima-priredio-rodjendansko-iznenadjenje-elmi-elfic-zukorlic/'))
+    
