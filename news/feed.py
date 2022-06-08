@@ -2,6 +2,8 @@ import feedparser
 import requests
 
 from bs4 import BeautifulSoup
+from requests.api import request
+
 
 def sandzakpress_net():
     rss_url = 'https://sandzakpress.net/feed/'
@@ -18,7 +20,7 @@ def sandzakpress_net():
             'views': sandzakpress_net_views(article['post-id'])
         }
         content.append(data)
-    
+
     return content
 
 
@@ -37,26 +39,27 @@ def sandzaklive_rs():
             'views': article['post-id']
         }
         content.append(data)
-    
+
     return content
 
 
-def sandzakhaber_net():
-    rss_url = 'https://sandzakhaber.net/feed/'
-    parsed_feed = feedparser.parse(rss_url)
-    content = []
-    for article in parsed_feed.entries:
-        data = {
-            'url': article['link'],
-            'title': article['title'],
-            'short_summary': article['summary'],
-            # TODO: add adjust for multiple content (index 0,1,2..)
-            'description': article['content'][0]['value'],
-            'views': article['post-id']
-        }
-        content.append(data)
-    
-    return content
+# def sandzakhaber_net():
+#     rss_url = 'https://sandzakhaber.net/feed/'
+#     parsed_feed = feedparser.parse(rss_url)
+#     content = []
+#     for article in parsed_feed.entries:
+#         data = {
+#             'url': article['link'],
+#             'title': article['title'],
+#             'short_summary': article['summary'],
+#             # TODO: add adjust for multiple content (index 0,1,2..)
+#             'description': article['content'][0]['value'],
+#             'views': article['post-id']
+#         }
+#         content.append(data)
+
+#     return content
+
 
 def rtvnp_rs():
     rss_url = 'https://rtvnp.rs/feed/'
@@ -73,30 +76,41 @@ def rtvnp_rs():
             'views': 'TODO'
         }
         content.append(data)
-    
+
     return content
+
 # utils
 
-# function get views (for article)
 def sandzakpress_net_views(article_id):
     payload = {
-    'action': 'td_ajax_get_views',
-    'td_post_ids': f'[{article_id}]'
+        'action': 'td_ajax_get_views',
+        'td_post_ids': f'[{article_id}]'
     }
     r = requests.post('https://sandzakpress.net/wp-admin/admin-ajax.php', data=payload)
     return list(r.json().values())[0]
 
+# def sandzakhaber_net_views(link):
+#     r = requests.get(link)
+#     parsed_data = BeautifulSoup(r.text, 'lxml')
+#     views = parsed_data.find('div', {'class': 'tdb_single_post_views'}).text
+#     return views.strip()
 
+def sandzalive_rs_views(link):
+    r = requests.get(link)
+    parsed_data = BeautifulSoup(r.text, 'lxml')
+    views = parsed_data.find('span', {'class': 'meta-views'}).text
+    return views.strip().replace(',', '')
 
+def rtvnp_rs_views(link):
+    r = requests.get(link)
+    parsed_data = BeautifulSoup(r.text, 'lxml')
+    views = parsed_data.find('span', {'class': 'total-views'}).text
+    return views.split()[0]
 
 if __name__ == '__main__':
-    # t = rtvnp_rs()
+    # t = sandzakhaber_net()
+    # print(t[0])
     # print(t[1]['views'])
     # print(t[0]['description'])
-    payload = {
-    'action': 'td_ajax_views',
-    'td_post_ids': f'[130488]'
-    }
-    r = requests.post('https://rtvnp.rs/wp-admin/admin-ajax.php', data=payload)
-    
-    print(r.text)
+    # print(rtvnp_rs_views('https://rtvnp.rs/2022/06/08/anonimni-donator-kupio-kravu-sacirovicima/130538'))
+    print(sandzakhaber_net_views('https://sandzakhaber.net/ruzic-sa-saradnicima-priredio-rodjendansko-iznenadjenje-elmi-elfic-zukorlic/'))
