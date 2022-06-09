@@ -14,7 +14,7 @@ class Item(BaseModel):
     description: str
     short_summary: str
     short_summary: str
-    views: str
+    views: int
 
 
 class Full(BaseModel):
