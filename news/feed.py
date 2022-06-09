@@ -35,8 +35,6 @@ def sandzaklive_rs():
 
     content = []
     for article in tqdm(parsed_feed.entries):
-        print(article)
-        exit()
         data = {
             'domain': 'sandzaklive.rs',
             'url': article['link'],
@@ -140,5 +138,5 @@ if __name__ == '__main__':
     data.extend(data_sandzakpress_net)
     data.extend(data_sandzaklive_rs)
     data.extend(data_rtvnp_rs)
-    print(json.dumps({"items": data}))
-    requests.post(f'https://vestinp.deta.dev/feed/?key={KEY}', data=json.dumps({"items": data}))
+
+    requests.post(f'https://api.vestinp.com/feed/?key={KEY}', data=json.dumps({"items": data}))
