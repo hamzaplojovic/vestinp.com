@@ -1,5 +1,4 @@
 import feedparser
-import json
 import os
 import requests
 
@@ -11,9 +10,9 @@ from tqdm import tqdm
 
 
 KEY = os.environ['KEY']
-deta = Deta("a001zjmk_1BZr4RgcEymk9eCkoPQbG4UYtSP2tiry")
+deta = Deta(os.environ['DETA_KEY'])
 
-db = deta.Base('data')
+db = deta.Base('items')
 
 def sandzakpress_net():
     rss_url = 'https://sandzakpress.net/feed/'

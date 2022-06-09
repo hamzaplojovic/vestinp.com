@@ -10,9 +10,9 @@ from operator import itemgetter
 from pydantic import BaseModel
 
 KEY = os.environ['KEY']
-deta = Deta("a001zjmk_1BZr4RgcEymk9eCkoPQbG4UYtSP2tiry")
+deta = Deta(os.environ['DETA_KEY'])
 
-db = deta.Base('data')
+db = deta.Base('items')
 
 app = FastAPI()
 
