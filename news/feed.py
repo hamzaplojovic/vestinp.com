@@ -138,5 +138,5 @@ if __name__ == '__main__':
     data.extend(data_sandzakpress_net)
     data.extend(data_sandzaklive_rs)
     data.extend(data_rtvnp_rs)
-
-    requests.post(f'https://55tdrv.deta.dev/feed/?KEY={KEY}', data=json.dumps({"items": data}))
+    print(json.dumps({"items": data}))
+    requests.post(f'https://55tdrv.deta.dev/feed/?key={KEY}', data=json.dumps({"items": data}))
