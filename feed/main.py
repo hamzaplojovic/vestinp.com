@@ -4,6 +4,7 @@ import requests
 
 from datetime import datetime
 from deta import Deta
+from deta import app
 
 from bs4 import BeautifulSoup
 from tqdm import tqdm
@@ -100,7 +101,8 @@ def rtvnp_rs_views(link):
     return int(views.split()[0])
 
 
-if __name__ == '__main__':
+@app.lib.cron()
+def cron_job(event):
     sandzakpress_net()
     sandzaklive_rs()
     rtvnp_rs()
