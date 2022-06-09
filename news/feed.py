@@ -3,18 +3,24 @@ import json
 import os
 import requests
 
+from datetime import datetime
+from deta import Deta
+
 from bs4 import BeautifulSoup
 from tqdm import tqdm
 
 
 KEY = os.environ['KEY']
+deta = Deta("a001zjmk_1BZr4RgcEymk9eCkoPQbG4UYtSP2tiry")
+
+db = deta.Base('data')
 
 def sandzakpress_net():
     rss_url = 'https://sandzakpress.net/feed/'
     parsed_feed = feedparser.parse(rss_url)
 
-    content = []
     for article in tqdm(parsed_feed.entries):
+        article_date = datetime.strptime(article['published'], '%a, %d %b %Y %X %z')
         data = {
             'domain': 'sandzakpress.net',
             'url': article['link'],
@@ -22,19 +28,18 @@ def sandzakpress_net():
             'short_summary': sandzakpress_net_title_filter(article['summary']),
             # TODO: add adjust for multiple content (index 0,1,2..)
             # 'description': article['content'][0]['value'],
-            'views': sandzakpress_net_views(article['post-id'])
+            'views': sandzakpress_net_views(article['post-id']),
+            'date': datetime.isoformat(article_date)
         }
-        content.append(data)
-
-    return content
+        db.put(data, key=data['url'])
 
 
 def sandzaklive_rs():
     rss_url = 'https://sandzaklive.rs/feed/'
     parsed_feed = feedparser.parse(rss_url)
 
-    content = []
     for article in tqdm(parsed_feed.entries):
+        article_date = datetime.strptime(article['published'], '%a, %d %b %Y %X %z')
         data = {
             'domain': 'sandzaklive.rs',
             'url': article['link'],
@@ -42,36 +47,17 @@ def sandzaklive_rs():
             'short_summary': article['summary'].replace('&#8230;', '..'),
             # TODO: add adjust for multiple content (index 0,1,2..)
             # 'description': article['content'][0]['value'],
-            'views': sandzaklive_rs_views(article['link'])
+            'views': sandzaklive_rs_views(article['link']),
+            'date': datetime.isoformat(article_date)
         }
-        content.append(data)
-
-    return content
-
-
-# def sandzakhaber_net():
-#     rss_url = 'https://sandzakhaber.net/feed/'
-#     parsed_feed = feedparser.parse(rss_url)
-#     content = []
-#     for article in parsed_feed.entries:
-#         data = {
-#             'url': article['link'],
-#             'title': article['title'],
-#             'short_summary': article['summary'],
-#             # TODO: add adjust for multiple content (index 0,1,2..)
-#             'description': article['content'][0]['value'],
-#             'views': article['post-id']
-#         }
-#         content.append(data)
-
-#     return content
+        db.put(data, key=data['url'])
 
 
 def rtvnp_rs():
     rss_url = 'https://rtvnp.rs/feed/'
     parsed_feed = feedparser.parse(rss_url)
-    content = []
     for article in tqdm(parsed_feed.entries):
+        article_date = datetime.strptime(article['published'], '%a, %d %b %Y %X %z')
         data = {
             'domain': 'rtvnp.rs',
             'url': article['link'],
@@ -79,11 +65,10 @@ def rtvnp_rs():
             'short_summary': article['summary'],
             # TODO: add adjust for multiple content (index 0,1,2..)
             # 'description': article['content'][0]['value'],
-            'views': rtvnp_rs_views(article['link'])
+            'views': rtvnp_rs_views(article['link']),
+            'date': datetime.isoformat(article_date)
         }
-        content.append(data)
-
-    return content
+        db.put(data, key=data['url'])
 
 # utils
 
@@ -97,17 +82,9 @@ def sandzakpress_net_views(article_id):
     return int(list(r.json().values())[0])
 
 
-
 def sandzakpress_net_title_filter(text):
     parsed = BeautifulSoup(text, 'lxml')
-    return parsed.text.replace('\n', '').split('[…]')[0].strip()    
-
-
-# def sandzakhaber_net_views(link):
-#     r = requests.get(link)
-#     parsed_data = BeautifulSoup(r.text, 'lxml')
-#     views = parsed_data.find('div', {'class': 'tdb_single_post_views'}).text
-#     return int(views.strip())
+    return parsed.text.replace('\n', '').split('[…]')[0].strip()
 
 
 def sandzaklive_rs_views(link):
@@ -125,18 +102,6 @@ def rtvnp_rs_views(link):
 
 
 if __name__ == '__main__':
-    data = []
-    data_sandzakpress_net = sandzakpress_net()
-    data_sandzaklive_rs = sandzaklive_rs()
-    data_rtvnp_rs = rtvnp_rs()
-
-    # Pareto's principle 80:20 rule
-    data_sandzakpress_net = sorted(data_sandzakpress_net, key=lambda item: item['views'], reverse=True)[:2]
-    data_sandzaklive_rs = sorted(data_sandzaklive_rs, key=lambda item: item['views'], reverse=True)[:2]
-    data_rtvnp_rs = sorted(data_rtvnp_rs, key=lambda item: item['views'], reverse=True)[:2]
-
-    data.extend(data_sandzakpress_net)
-    data.extend(data_sandzaklive_rs)
-    data.extend(data_rtvnp_rs)
-
-    requests.post(f'https://api.vestinp.com/feed/?key={KEY}', data=json.dumps({"items": data}))
+    sandzakpress_net()
+    sandzaklive_rs()
+    rtvnp_rs()
