@@ -23,12 +23,12 @@ class Full(BaseModel):
     items: list[Item]
 
 
-@app.get('/api/data')
+@app.get('/data/')
 def root():
     return DATA
 
 
-@app.post('/api/feed/')
+@app.post('/feed/')
 def post_feed(key: str, full: Full = Body(...)):
     if key==KEY:
         global DATA
