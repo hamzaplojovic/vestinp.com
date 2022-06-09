@@ -61,7 +61,6 @@ def data_today_top():
     content = []
     for k, v in groupby(data, itemgetter('domain')):
         sorted_data = sorted(v, key=itemgetter('views'), reverse=True)
-        # pareto = int(len(sorted_data) * 0.2)
         content.extend(sorted_data[:2])
 
     return content
@@ -77,8 +76,7 @@ def data_month_top():
     content = []
     for k, v in groupby(data, itemgetter('domain')):
         sorted_data = sorted(v, key=itemgetter('views'), reverse=True)
-        pareto = int(len(sorted_data) * 0.2)
-        content.extend(sorted_data[:pareto])
+        content.extend(sorted_data[:2])
 
     return content
 
