@@ -81,31 +81,35 @@ def rtvnp_rs():
 
 # utils
 
+
 def sandzakpress_net_views(article_id):
     payload = {
         'action': 'td_ajax_get_views',
         'td_post_ids': f'[{article_id}]'
     }
     r = requests.post('https://sandzakpress.net/wp-admin/admin-ajax.php', data=payload)
-    return list(r.json().values())[0]
+    return int(list(r.json().values())[0])
 
 # def sandzakhaber_net_views(link):
 #     r = requests.get(link)
 #     parsed_data = BeautifulSoup(r.text, 'lxml')
 #     views = parsed_data.find('div', {'class': 'tdb_single_post_views'}).text
-#     return views.strip()
+#     return int(views.strip())
+
 
 def sandzaklive_rs_views(link):
     r = requests.get(link)
     parsed_data = BeautifulSoup(r.text, 'lxml')
     views = parsed_data.find('span', {'class': 'meta-views'}).text
-    return views.strip().replace(',', '')
+    return int(views.strip().replace(',', ''))
+
 
 def rtvnp_rs_views(link):
     r = requests.get(link)
     parsed_data = BeautifulSoup(r.text, 'lxml')
     views = parsed_data.find('span', {'class': 'total-views'}).text
-    return views.split()[0]
+    return int(views.split()[0])
+
 
 if __name__ == '__main__':
     data = []
@@ -113,9 +117,13 @@ if __name__ == '__main__':
     data_sandzaklive_rs = sandzaklive_rs()
     data_rtvnp_rs = rtvnp_rs()
 
+    # Pareto's principle 80:20 rule
+    data_sandzakpress_net = sorted(data_sandzakpress_net, key=lambda item: item['views'], reverse=True)[:2]
+    data_sandzaklive_rs = sorted(data_sandzaklive_rs, key=lambda item: item['views'], reverse=True)[:2]
+    data_rtvnp_rs = sorted(data_rtvnp_rs, key=lambda item: item['views'], reverse=True)[:2]
+
     data.extend(data_sandzakpress_net)
     data.extend(data_sandzaklive_rs)
     data.extend(data_rtvnp_rs)
 
-    print(data)
-    requests.post('http://127.0.0.1:8000/feed/', data=json.dumps({"items":data}))
+    requests.post('http://127.0.0.1:8000/feed/', data=json.dumps({"items": data}))
