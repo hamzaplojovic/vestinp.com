@@ -42,7 +42,10 @@ class Full(BaseModel):
 
 @app.get('/data/')
 def root():
-    return db.fetch().items
+    data = db.fetch().items
+    if data:
+        return data[0]['items']
+    return None
 
 
 @app.post('/feed/')
