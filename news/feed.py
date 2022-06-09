@@ -1,10 +1,13 @@
 import feedparser
 import json
+import os
 import requests
 
 from bs4 import BeautifulSoup
 from tqdm import tqdm
 
+
+KEY = os.environ['KEY']
 
 def sandzakpress_net():
     rss_url = 'https://sandzakpress.net/feed/'
@@ -136,4 +139,4 @@ if __name__ == '__main__':
     data.extend(data_sandzaklive_rs)
     data.extend(data_rtvnp_rs)
 
-    requests.post('http://127.0.0.1:8000/feed/', data=json.dumps({"items": data}))
+    requests.post(f'https://55tdrv.deta.dev/feed/?KEY={KEY}', data=json.dumps({"items": data}))

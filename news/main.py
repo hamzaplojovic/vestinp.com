@@ -1,11 +1,14 @@
-from pydantic import BaseModel
+import os
 
 from fastapi import Body
 from fastapi import FastAPI
+from pydantic import BaseModel
 
 app = FastAPI()
 
 DATA = []
+
+KEY = os.environ['KEY']
 
 
 class Item(BaseModel):
@@ -26,7 +29,9 @@ def root():
 
 
 @app.post('/feed/')
-def post_feed(full: Full = Body(...)):
-    global DATA
-    DATA = full
-    return {'status': 200}
+def post_feed(key: str, full: Full = Body(...)):
+    if key==KEY:
+        global DATA
+        DATA = full
+        return {'status': 200}
+    return {'status': 400}
