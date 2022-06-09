@@ -9,10 +9,9 @@ DATA = []
 
 
 class Item(BaseModel):
+    domain: str
     url: str
     title: str
-    description: str
-    short_summary: str
     short_summary: str
     views: int
 
@@ -23,7 +22,7 @@ class Full(BaseModel):
 
 @app.get('/')
 def root():
-    return {'items': DATA}
+    return DATA
 
 
 @app.post('/feed/')

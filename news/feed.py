@@ -13,11 +13,12 @@ def sandzakpress_net():
     content = []
     for article in tqdm(parsed_feed.entries):
         data = {
+            'domain': 'sandzakpress.net',
             'url': article['link'],
             'title': article['title'],
-            'short_summary': article['summary'],
+            'short_summary': sandzakpress_net_title_filter(article['summary']),
             # TODO: add adjust for multiple content (index 0,1,2..)
-            'description': article['content'][0]['value'],
+            # 'description': article['content'][0]['value'],
             'views': sandzakpress_net_views(article['post-id'])
         }
         content.append(data)
@@ -32,11 +33,12 @@ def sandzaklive_rs():
     content = []
     for article in tqdm(parsed_feed.entries):
         data = {
+            'domain': 'sandzaklive.rs',
             'url': article['link'],
             'title': article['title'],
-            'short_summary': article['summary'],
+            'short_summary': article['summary'].replace('&#8230;', '..'),
             # TODO: add adjust for multiple content (index 0,1,2..)
-            'description': article['content'][0]['value'],
+            # 'description': article['content'][0]['value'],
             'views': sandzaklive_rs_views(article['link'])
         }
         content.append(data)
@@ -68,11 +70,12 @@ def rtvnp_rs():
     content = []
     for article in tqdm(parsed_feed.entries):
         data = {
+            'domain': 'rtvnp.rs',
             'url': article['link'],
             'title': article['title'],
             'short_summary': article['summary'],
             # TODO: add adjust for multiple content (index 0,1,2..)
-            'description': article['content'][0]['value'],
+            # 'description': article['content'][0]['value'],
             'views': rtvnp_rs_views(article['link'])
         }
         content.append(data)
@@ -89,6 +92,13 @@ def sandzakpress_net_views(article_id):
     }
     r = requests.post('https://sandzakpress.net/wp-admin/admin-ajax.php', data=payload)
     return int(list(r.json().values())[0])
+
+
+
+def sandzakpress_net_title_filter(text):
+    parsed = BeautifulSoup(text, 'lxml')
+    return parsed.text.replace('\n', '').split('[…]')[0].strip()    
+
 
 # def sandzakhaber_net_views(link):
 #     r = requests.get(link)
