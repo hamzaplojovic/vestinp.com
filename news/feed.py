@@ -1,11 +1,9 @@
 import feedparser
-import requests
 import json
-
-from websocket import create_connection
+import requests
 
 from bs4 import BeautifulSoup
-from requests.api import request
+from tqdm import tqdm
 
 
 def sandzakpress_net():
@@ -13,13 +11,13 @@ def sandzakpress_net():
     parsed_feed = feedparser.parse(rss_url)
 
     content = []
-    for article in parsed_feed.entries:
+    for article in tqdm(parsed_feed.entries):
         data = {
             'url': article['link'],
             'title': article['title'],
             'short_summary': article['summary'],
             # TODO: add adjust for multiple content (index 0,1,2..)
-            'description': article['content'][0],
+            'description': article['content'][0]['value'],
             'views': sandzakpress_net_views(article['post-id'])
         }
         content.append(data)
@@ -32,14 +30,14 @@ def sandzaklive_rs():
     parsed_feed = feedparser.parse(rss_url)
 
     content = []
-    for article in parsed_feed.entries:
+    for article in tqdm(parsed_feed.entries):
         data = {
             'url': article['link'],
             'title': article['title'],
             'short_summary': article['summary'],
             # TODO: add adjust for multiple content (index 0,1,2..)
             'description': article['content'][0]['value'],
-            'views': sandzalive_rs_views(article['link'])
+            'views': sandzaklive_rs_views(article['link'])
         }
         content.append(data)
 
@@ -68,7 +66,7 @@ def rtvnp_rs():
     rss_url = 'https://rtvnp.rs/feed/'
     parsed_feed = feedparser.parse(rss_url)
     content = []
-    for article in parsed_feed.entries:
+    for article in tqdm(parsed_feed.entries):
         data = {
             'url': article['link'],
             'title': article['title'],
@@ -97,7 +95,7 @@ def sandzakpress_net_views(article_id):
 #     views = parsed_data.find('div', {'class': 'tdb_single_post_views'}).text
 #     return views.strip()
 
-def sandzalive_rs_views(link):
+def sandzaklive_rs_views(link):
     r = requests.get(link)
     parsed_data = BeautifulSoup(r.text, 'lxml')
     views = parsed_data.find('span', {'class': 'meta-views'}).text
@@ -110,4 +108,14 @@ def rtvnp_rs_views(link):
     return views.split()[0]
 
 if __name__ == '__main__':
-    
+    data = []
+    data_sandzakpress_net = sandzakpress_net()
+    data_sandzaklive_rs = sandzaklive_rs()
+    data_rtvnp_rs = rtvnp_rs()
+
+    data.extend(data_sandzakpress_net)
+    data.extend(data_sandzaklive_rs)
+    data.extend(data_rtvnp_rs)
+
+    print(data)
+    requests.post('http://127.0.0.1:8000/feed/', data=json.dumps({"items":data}))
