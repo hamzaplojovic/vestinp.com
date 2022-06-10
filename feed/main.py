@@ -5,7 +5,6 @@ import requests
 
 from datetime import datetime
 from deta import Deta
-from deta import app
 
 from bs4 import BeautifulSoup
 from tqdm import tqdm
@@ -118,9 +117,3 @@ def rtvnp_rs_views_and_img(link):
     views = parsed_data.find('span', {'class': 'total-views'}).text
     img = parsed_data.find('div', {'class': 'featured-image'}).img['src']
     return int(views.split()[0]),furl.furl(img).remove(args=True, fragment=True).url
-
-@app.lib.cron()
-def cron_job(event):
-    sandzakpress_net()
-    sandzaklive_rs()
-    rtvnp_rs()
