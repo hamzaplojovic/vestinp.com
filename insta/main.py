@@ -20,7 +20,7 @@ from numpy.core.arrayprint import IntegerFormat
 USERNAME = 'vesti_np'
 PASSWORD = 'Ba%qNQ5z^X!D@$73'
 
-
+# TODO: implement a layer of black color with reduced opacity for contrast
 def process_image(link, information):
     r = requests.get(link)
 
@@ -31,7 +31,7 @@ def process_image(link, information):
     draw = ImageDraw.Draw(im)
     text = "Klikni za vise!"
 
-    font = ImageFont.truetype("arial.ttf", 30)
+    font = ImageFont.truetype("Roboto-Regular.ttf", 35)
 
     # Size of the image in pixels (size of original image)
     # (This is not mandatory)
@@ -41,12 +41,14 @@ def process_image(link, information):
     x = (width - textwidth) / 2
     y = (height - textheight) / 2
 
-    draw.text((x, y), text, font=font, fill=(255, 0, 0))
+    # draw.rectangle([(0, 0), im.size], fill=(0, 0, 0, 240))
+
+    draw.text((x - 30, y), text, font=font, fill=(255, 0, 0), stroke_fill=(0, 0, 0), stroke_width=2)
     lines = textwrap.wrap(information, width=33)
     y_text = 15
 
     for line in lines:
-        draw.text((width//4, y_text), line, font=font, fill=(255, 0, 0))
+        draw.text((width // 4, y_text), line, font=font, fill=(255, 255, 255), stroke_fill=(0, 0, 0), stroke_width=2)
         y_text += 35
     # Setting the points for cropped image
     newsize = (1080, 1080)
@@ -60,6 +62,7 @@ cl = Client()
 cl.login(USERNAME, PASSWORD)
 
 
+# process_image('https://rtvnp.rs/wp-content/uploads/2022/06/800x450-1-800x445.jpg', 'Postovani ovo je test vest za vas!')
 response = requests.get('https://api.vestinp.com/data/today/top/').json()
 for article in response:
 
