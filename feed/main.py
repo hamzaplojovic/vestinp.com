@@ -1,4 +1,5 @@
 import feedparser
+import furl
 import os
 import requests
 
@@ -9,11 +10,10 @@ from deta import app
 from bs4 import BeautifulSoup
 from tqdm import tqdm
 
-
-KEY = os.environ['KEY']
-deta = Deta(os.environ['DETA_KEY'])
+deta = Deta(os.environ['DETA_PROJECT_KEY'])
 
 db = deta.Base('items')
+
 
 def sandzakpress_net():
     rss_url = 'https://sandzakpress.net/feed/'
@@ -29,7 +29,8 @@ def sandzakpress_net():
             # TODO: add adjust for multiple content (index 0,1,2..)
             # 'description': article['content'][0]['value'],
             'views': sandzakpress_net_views(article['post-id']),
-            'date': datetime.isoformat(article_date)
+            'date': datetime.isoformat(article_date),
+            'img': sandzakpress_net_img_finder(article['content'][0]['value'])
         }
         db.put(data, key=data['url'])
 
@@ -40,6 +41,7 @@ def sandzaklive_rs():
 
     for article in tqdm(parsed_feed.entries):
         article_date = datetime.strptime(article['published'], '%a, %d %b %Y %X %z')
+        views, img = sandzaklive_rs_views_and_img(article['link'])
         data = {
             'domain': 'sandzaklive.rs',
             'url': article['link'],
@@ -47,8 +49,10 @@ def sandzaklive_rs():
             'short_summary': article['summary'].replace('&#8230;', '..'),
             # TODO: add adjust for multiple content (index 0,1,2..)
             # 'description': article['content'][0]['value'],
-            'views': sandzaklive_rs_views(article['link']),
-            'date': datetime.isoformat(article_date)
+            'views': views,
+            'date': datetime.isoformat(article_date),
+            'img': img
+
         }
         db.put(data, key=data['url'])
 
@@ -58,6 +62,7 @@ def rtvnp_rs():
     parsed_feed = feedparser.parse(rss_url)
     for article in tqdm(parsed_feed.entries):
         article_date = datetime.strptime(article['published'], '%a, %d %b %Y %X %z')
+        views, img = rtvnp_rs_views_and_img(article['link'])
         data = {
             'domain': 'rtvnp.rs',
             'url': article['link'],
@@ -65,8 +70,10 @@ def rtvnp_rs():
             'short_summary': article['summary'],
             # TODO: add adjust for multiple content (index 0,1,2..)
             # 'description': article['content'][0]['value'],
-            'views': rtvnp_rs_views(article['link']),
-            'date': datetime.isoformat(article_date)
+            'views': views,
+            'date': datetime.isoformat(article_date),
+            'img': img
+
         }
         db.put(data, key=data['url'])
 
@@ -87,19 +94,30 @@ def sandzakpress_net_title_filter(text):
     return parsed.text.replace('\n', '').split('[…]')[0].strip()
 
 
-def sandzaklive_rs_views(link):
+def sandzakpress_net_img_finder(value):
+    parsed = BeautifulSoup(value, 'lxml')
+    return furl.furl(parsed.img['src']).remove(args=True, fragment=True).url
+
+
+def sandzaklive_rs_img(value):
+    parsed = BeautifulSoup(value, 'lxml')
+    return
+
+
+def sandzaklive_rs_views_and_img(link):
     r = requests.get(link)
     parsed_data = BeautifulSoup(r.text, 'lxml')
     views = parsed_data.find('span', {'class': 'meta-views'}).text
-    return int(views.strip().replace(',', ''))
+    img = parsed_data.find('figure', {'class': 'single-featured-image'}).img['src']
+    return int(views.strip().replace(',', '')), furl.furl(img).remove(args=True, fragment=True).url
 
 
-def rtvnp_rs_views(link):
+def rtvnp_rs_views_and_img(link):
     r = requests.get(link)
     parsed_data = BeautifulSoup(r.text, 'lxml')
     views = parsed_data.find('span', {'class': 'total-views'}).text
-    return int(views.split()[0])
-
+    img = parsed_data.find('div', {'class': 'featured-image'}).img['src']
+    return int(views.split()[0]),furl.furl(img).remove(args=True, fragment=True).url
 
 @app.lib.cron()
 def cron_job(event):

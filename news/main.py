@@ -9,8 +9,7 @@ from itertools import groupby
 from operator import itemgetter
 from pydantic import BaseModel
 
-KEY = os.environ['KEY']
-deta = Deta(os.environ['DETA_KEY'])
+deta = Deta(os.environ['DETA_PROJECT_KEY'])
 
 db = deta.Base('items')
 
@@ -33,6 +32,7 @@ class Item(BaseModel):
     short_summary: str
     views: int
     date: str
+    img: str
 
 
 @app.get('/data/')
@@ -66,6 +66,6 @@ def data_month_top():
     content = []
     for k, v in groupby(data, itemgetter('domain')):
         sorted_data = sorted(v, key=itemgetter('views'), reverse=True)
-        content.extend(sorted_data[:2])
+        content.extend(sorted_data[:3])
 
     return content
