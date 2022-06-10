@@ -117,3 +117,8 @@ def rtvnp_rs_views_and_img(link):
     views = parsed_data.find('span', {'class': 'total-views'}).text
     img = parsed_data.find('div', {'class': 'featured-image'}).img['src']
     return int(views.split()[0]),furl.furl(img).remove(args=True, fragment=True).url
+
+
+sandzakpress_net()
+sandzaklive_rs()
+rtvnp_rs()
