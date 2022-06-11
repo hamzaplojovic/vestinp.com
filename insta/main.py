@@ -24,7 +24,7 @@ TRANSPARENCY = .20  # Degree of transparency, 0-100%
 OPACITY = int(255 * TRANSPARENCY)
 def draw(img, text):
 
-    click = "Klikni na sliku, za više!"
+    click = "Klik na sliku za više!"
 
     width, height = img.size
 
