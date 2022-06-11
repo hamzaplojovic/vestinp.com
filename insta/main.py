@@ -76,7 +76,7 @@ def process_image(link, text):
 
     # save image
     size = (1080, 1080)
-    img.thumbnail(size, Image.ANTIALIAS)
+    img.thumbnail(size, Image.LANCZOS)
     img.save('output.jpg')
     return 'output.jpg'
 
