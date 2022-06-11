@@ -43,7 +43,7 @@ def draw(img, text):
     textwidth, textheight = draw.textsize(lines[0], font=FONT2)
     x = (width - textwidth) / 8
     for line in lines:
-        draw.text((x, y_new), line, font=FONT2, stroke_width=1, stroke_fill=(0, 0, 0), align='center')
+        draw.text((x, y_new), line, font=FONT2, stroke_width=2, stroke_fill=(0, 0, 0), align='center')
         y_new += 36
 
     return img
