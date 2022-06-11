@@ -16,44 +16,52 @@ from bs4 import BeautifulSoup
 USERNAME = 'vesti_np'
 PASSWORD = 'Ba%qNQ5z^X!D@$73'
 
+FONT1 = ImageFont.truetype("Roboto-Regular.ttf", size=20)
+FONT2 = ImageFont.truetype("Roboto-Regular.ttf", size=30)
+
+def draw(img, text):
+
+    draw = ImageDraw.Draw(img)
+    click = "Klikni za više!"
+
+    width, height = img.size
+
+    textwidth, textheight = draw.textsize(click, font=FONT1)
+    x = width - textwidth - 36
+    y = height - textheight -  36
+
+    draw.rectangle((x+textwidth + 4, y+textheight+4, x-4, y), fill=(255, 255, 255, 5),outline='black')
+    draw.text((x, y), click, font=FONT1, align='center', fill=(255, 0, 0), stroke_fill=(0, 0, 0), stroke_width=1)  # , font=FONT,
+    lines = textwrap.wrap(text, width=33)
+
+    y_new = 36
+    textwidth, textheight = draw.textsize(lines[0], font=FONT2)
+    x = (width - textwidth) / 8
+    for line in lines:
+        draw.text((x, y_new), line, font=FONT2, stroke_width=1, stroke_fill=(0, 0, 0), align='center')
+        y_new += 36
+
+
+    return img
 # TODO: implement a layer of black color with reduced opacity for contrast
 def process_image(link, information):
+    # request image
     img_url = furl.furl(link).remove(args=True, fragment=True).url
-
     r = requests.get(img_url)
 
+    # load image
     try:
         im = Image.open(io.BytesIO(r.content))
     except Exception as e:
         print(e)
         return None
-    draw = ImageDraw.Draw(im)
-    text = "Klikni za vise!"
+    # draw over image
+    img = draw(im, text)
 
-    font = ImageFont.truetype("Roboto-Regular.ttf", 35)
-
-    # Size of the image in pixels (size of original image)
-    # (This is not mandatory)
-    width, height = im.size
-
-    textwidth, textheight = draw.textsize(text)
-    x = (width - textwidth) / 2
-    y = (height - textheight) / 2
-
-    # draw.rectangle([(0, 0), im.size], fill=(0, 0, 0, 240))
-
-    draw.text((x - 30, y), text, font=font, fill=(255, 0, 0), stroke_fill=(0, 0, 0), stroke_width=2)
-    lines = textwrap.wrap(information, width=33)
-    y_text = 15
-
-    for line in lines:
-        draw.text((width // 4, y_text), line, font=font, fill=(255, 255, 255), stroke_fill=(0, 0, 0), stroke_width=2)
-        y_text += 35
-    # Setting the points for cropped image
-    newsize = (1080, 1080)
-    new_img = im.resize(newsize)
-    # Shows the image in image viewer
-    new_img.save('output.jpg')
+    # save image
+    size = (1080, 1080)
+    img.thumbnail(size, Image.ANTIALIAS)
+    img.save('output.jpg')
     return 'output.jpg'
 
 
