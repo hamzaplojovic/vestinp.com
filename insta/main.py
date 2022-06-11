@@ -23,7 +23,8 @@ def process_image(link, information):
 
     try:
         im = Image.open(io.BytesIO(r.content))
-    except:
+    except Exception as e:
+        print(e)
         return None
     draw = ImageDraw.Draw(im)
     text = "Klikni za vise!"
@@ -67,6 +68,6 @@ for article in response:
             Path(process_image(article['img'], BeautifulSoup(article['title'], 'lxml').get_text())),
             links=[StoryLink(webUri=article['url'])]
         )
-    except:
-        pass
+    except Exception as e:
+        print(e)
 print('Finished!')
