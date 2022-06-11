@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 import furl
 import io
 import requests
