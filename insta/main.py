@@ -81,18 +81,18 @@ def process_image(link, text):
     return 'output.jpg'
 
 
-# cl = Client()
-# cl.login(USERNAME, PASSWORD)
+cl = Client()
+cl.login(USERNAME, PASSWORD)
 
 
-process_image('https://rtvnp.rs/wp-content/uploads/2022/06/800x450-1-800x445.jpg', 'Postovani ovo je test vest za vas!')
-# response = requests.get('https://api.vestinp.com/data/today/top/').json()
-# for article in response:
-#     try:
-#         cl.photo_upload_to_story(
-#             Path(process_image(article['img'], BeautifulSoup(article['title'], 'lxml').get_text())),
-#             links=[StoryLink(webUri=article['url'])]
-#         )
-#     except Exception as e:
-#         print(e)
-# print('Finished!')
+# process_image('https://rtvnp.rs/wp-content/uploads/2022/06/800x450-1-800x445.jpg', 'Postovani ovo je test vest za vas!')
+response = requests.get('https://api.vestinp.com/data/today/top/').json()
+for article in response:
+    try:
+        cl.photo_upload_to_story(
+            Path(process_image(article['img'], BeautifulSoup(article['title'], 'lxml').get_text())),
+            links=[StoryLink(webUri=article['url'])]
+        )
+    except Exception as e:
+        print(e)
+print('Finished!')
