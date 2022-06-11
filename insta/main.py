@@ -16,8 +16,6 @@ from bs4 import BeautifulSoup
 USERNAME = 'vesti_np'
 PASSWORD = 'Ba%qNQ5z^X!D@$73'
 
-FONT1 = ImageFont.truetype("Roboto-Regular.ttf", size=28)
-FONT2 = ImageFont.truetype("Roboto-Regular.ttf", size=40)
 
 TINT_COLOR = (0, 0, 0)  # Black
 TRANSPARENCY = .20  # Degree of transparency, 0-100%
@@ -27,6 +25,8 @@ def draw(img, text):
     click = "Klik na sliku za više!"
 
     width, height = img.size
+    FONT1 = ImageFont.truetype("Roboto-Regular.ttf", size= width // 30)
+    FONT2 = ImageFont.truetype("Roboto-Regular.ttf", size= width // 16)
 
     img = opacity(img)
     draw = ImageDraw.Draw(img)
@@ -44,7 +44,7 @@ def draw(img, text):
     x = (width - textwidth) / 8
     for line in lines:
         draw.text((x, y_new), line, font=FONT2, stroke_width=2, stroke_fill=(0, 0, 0), align='center')
-        y_new += 36
+        y_new += (width // 30) + 36
 
     return img
 
@@ -76,7 +76,7 @@ def process_image(link, text):
 
     # save image
     size = (1080, 1080)
-    img.resize(size, Image.LANCZOS)
+    img.resize(size, Image.Resampling.LANCZOS)
     img.save('output.jpg')
     return 'output.jpg'
 
