@@ -1,3 +1,4 @@
+#!/usr/bin/python
 import feedparser
 import furl
 import os
