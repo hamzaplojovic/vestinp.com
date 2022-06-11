@@ -1,12 +1,20 @@
 <!DOCTYPE html>
-<html>
-<head>
-	<meta charset="utf-8">
-	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>Vesti Novi Pazar</title>
-	<link rel="stylesheet" href="assets/style.css">
-</head>
-<body>
-<p>Test</p>
-</body>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Vesti Novi Pazar</title>
+  </head>
+  <body>
+    <div class="root" id="root"></div>
+    <a href="{{article.url}}">
+      <div id="">
+        <img src="{{article.img}}" alt="" />
+        <h1>{{article.title}}</h1>
+        <p>{{article.short_summary}}</p>
+      </div>
+    </a>
+    <script src="./script.js"></script>
+  </body>
 </html>
