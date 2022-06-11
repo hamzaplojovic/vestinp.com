@@ -1,28 +1,25 @@
+import furl
 import io
 import requests
 import textwrap
-
-from base64 import decode
-from base64 import encode
 
 from PIL import Image
 from PIL import ImageDraw
 from PIL import ImageFont
 from instagrapi import Client
-from instagrapi.types import StoryBuild
 from instagrapi.types import StoryLink
-from instagrapi.types import StoryMention
 from pathlib import Path
 
 from bs4 import BeautifulSoup
-from numpy.core.arrayprint import IntegerFormat
 
 USERNAME = 'vesti_np'
 PASSWORD = 'Ba%qNQ5z^X!D@$73'
 
 # TODO: implement a layer of black color with reduced opacity for contrast
 def process_image(link, information):
-    r = requests.get(link)
+    img_url = furl.furl(link).remove(args=True, fragment=True).url
+
+    r = requests.get(img_url)
 
     try:
         im = Image.open(io.BytesIO(r.content))
@@ -65,7 +62,6 @@ cl.login(USERNAME, PASSWORD)
 # process_image('https://rtvnp.rs/wp-content/uploads/2022/06/800x450-1-800x445.jpg', 'Postovani ovo je test vest za vas!')
 response = requests.get('https://api.vestinp.com/data/today/top/').json()
 for article in response:
-
     try:
         cl.photo_upload_to_story(
             Path(process_image(article['img'], BeautifulSoup(article['title'], 'lxml').get_text())),

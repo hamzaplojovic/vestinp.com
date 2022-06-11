@@ -1,17 +1,20 @@
-import os
+import furl
+import io
+import requests
 
-from deta import Deta
-
-deta = Deta(os.environ['DETA_PROJECT_KEY'])
-
-db = deta.Base('items')
+from PIL import Image
 
 
-all_items = db.fetch().items
+response = requests.get('https://api.vestinp.com/data').json()
 
-print(all_items)
-# keys = [x['key'] for x in all_items]
 
-# for key in keys:
-#     db.delete(key)
-
+for article in response:
+	img_url = furl.furl(article['img']).remove(args=True, fragment=True).url
+	r = requests.get(img_url)
+	try:
+		img_bytes = io.BytesIO(r.content)
+		im = Image.open(img_bytes)
+	except Exception as e:
+		print(e)
+		print(img_url)
+		# print(r.content)
