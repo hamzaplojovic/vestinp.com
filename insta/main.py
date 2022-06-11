@@ -24,7 +24,7 @@ TRANSPARENCY = .20  # Degree of transparency, 0-100%
 OPACITY = int(255 * TRANSPARENCY)
 def draw(img, text):
 
-    click = "Klikni za više!"
+    click = "Klikni na sliku, za više!"
 
     width, height = img.size
 
@@ -35,7 +35,7 @@ def draw(img, text):
     x = width - textwidth - 36
     y = height - textheight -  36
 
-    # draw.rectangle((x+textwidth + 4, y+textheight+4, x-4, y), fill=(255, 255, 255, 5),outline='black')
+    draw.rectangle((x+textwidth + 4, y+textheight+4, x-4, y), fill=(255, 255, 255, 5),outline='black')
     draw.text((x, y), click, font=FONT1, align='center', fill=(255, 0, 0), stroke_fill=(0, 0, 0), stroke_width=1)  # , font=FONT,
     lines = textwrap.wrap(text, width=33)
 
