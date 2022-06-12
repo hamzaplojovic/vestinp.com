@@ -124,7 +124,7 @@ def rtvnp_rs_views_and_img(link):
     return int(views.split()[0]),furl.furl(img).remove(args=True, fragment=True).url
 
 @app.lib.cron()
-    def cron_job(event):
+def cron_job(event):
     sandzakpress_net()
     sandzaklive_rs()
     rtvnp_rs()
