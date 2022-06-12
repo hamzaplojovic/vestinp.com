@@ -21,18 +21,19 @@ def sandzakpress_net():
 
     for article in tqdm(parsed_feed.entries):
         article_date = datetime.strptime(article['published'], '%a, %d %b %Y %X %z')
-        data = {
-            'domain': 'sandzakpress.net',
-            'url': article['link'],
-            'title': article['title'],
-            'short_summary': sandzakpress_net_title_filter(article['summary']),
-            # TODO: add adjust for multiple content (index 0,1,2..)
-            # 'description': article['content'][0]['value'],
-            'views': sandzakpress_net_views(article['post-id']),
-            'date': datetime.isoformat(article_date),
-            'img': sandzakpress_net_img_finder(article['content'][0]['value'])
-        }
-        db.put(data, key=data['url'])
+        if not db.get(article['link']):
+            data = {
+                'domain': 'sandzakpress.net',
+                'url': article['link'],
+                'title': article['title'],
+                'short_summary': sandzakpress_net_title_filter(article['summary']),
+                # TODO: add adjust for multiple content (index 0,1,2..)
+                # 'description': article['content'][0]['value'],
+                'views': sandzakpress_net_views(article['post-id']),
+                'date': datetime.isoformat(article_date),
+                'img': sandzakpress_net_img_finder(article['content'][0]['value'])
+            }
+            db.put(data, key=data['url'])
 
 
 def sandzaklive_rs():
