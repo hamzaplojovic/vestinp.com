@@ -76,23 +76,34 @@ def process_image(link, text):
 
     # save image
     size = (1080, 1080)
-    img.resize(size, Image.Resampling.LANCZOS)
+    img.resize(size, Image.LANCZOS)
     img.save('output.jpg')
     return 'output.jpg'
 
 
-cl = Client()
-cl.login(USERNAME, PASSWORD)
 
 
 # process_image('https://rtvnp.rs/wp-content/uploads/2022/06/800x450-1-800x445.jpg', 'Postovani ovo je test vest za vas!')
 response = requests.get('https://api.vestinp.com/data/today/top/').json()
+
+# for article in response:
+#     print(article['img'])
+
+
+cl = Client()
+cl.login(USERNAME, PASSWORD)
 for article in response:
     try:
+        link = StoryLink(webUri=article['url'])
         cl.photo_upload_to_story(
             Path(process_image(article['img'], BeautifulSoup(article['title'], 'lxml').get_text())),
-            links=[StoryLink(webUri=article['url'])]
+            links=[link]
         )
+        link = None
+        print('-------------------------------------')
+        print(article['url'])
+        print(article)
+        print('-------------------------------------')
     except Exception as e:
         print(e)
 print('Finished!')
