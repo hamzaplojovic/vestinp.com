@@ -26,7 +26,7 @@ def draw(img, text):
 
     width, height = img.size
     FONT1 = ImageFont.truetype("Roboto-Regular.ttf", size= width // 30)
-    FONT2 = ImageFont.truetype("Roboto-Regular.ttf", size= width // 16)
+    FONT2 = ImageFont.truetype("Roboto-Regular.ttf", size= width // 20)
 
     img = opacity(img)
     draw = ImageDraw.Draw(img)
