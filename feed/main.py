@@ -41,42 +41,44 @@ def sandzaklive_rs():
     parsed_feed = feedparser.parse(rss_url)
 
     for article in tqdm(parsed_feed.entries):
-        article_date = datetime.strptime(article['published'], '%a, %d %b %Y %X %z')
-        views, img = sandzaklive_rs_views_and_img(article['link'])
-        data = {
-            'domain': 'sandzaklive.rs',
-            'url': article['link'],
-            'title': article['title'],
-            'short_summary': article['summary'].replace('&#8230;', '..'),
-            # TODO: add adjust for multiple content (index 0,1,2..)
-            # 'description': article['content'][0]['value'],
-            'views': views,
-            'date': datetime.isoformat(article_date),
-            'img': img
+        if not db.get(article['link']):
+            article_date = datetime.strptime(article['published'], '%a, %d %b %Y %X %z')
+            views, img = sandzaklive_rs_views_and_img(article['link'])
+            data = {
+                'domain': 'sandzaklive.rs',
+                'url': article['link'],
+                'title': article['title'],
+                'short_summary': article['summary'].replace('&#8230;', '..'),
+                # TODO: add adjust for multiple content (index 0,1,2..)
+                # 'description': article['content'][0]['value'],
+                'views': views,
+                'date': datetime.isoformat(article_date),
+                'img': img
 
-        }
-        db.put(data, key=data['url'])
+            }
+            db.put(data, key=data['url'])
 
 
 def rtvnp_rs():
     rss_url = 'https://rtvnp.rs/feed/'
     parsed_feed = feedparser.parse(rss_url)
     for article in tqdm(parsed_feed.entries):
-        article_date = datetime.strptime(article['published'], '%a, %d %b %Y %X %z')
-        views, img = rtvnp_rs_views_and_img(article['link'])
-        data = {
-            'domain': 'rtvnp.rs',
-            'url': article['link'],
-            'title': article['title'],
-            'short_summary': article['summary'],
-            # TODO: add adjust for multiple content (index 0,1,2..)
-            # 'description': article['content'][0]['value'],
-            'views': views,
-            'date': datetime.isoformat(article_date),
-            'img': img
+        if not db.get(article['link']):
+            article_date = datetime.strptime(article['published'], '%a, %d %b %Y %X %z')
+            views, img = rtvnp_rs_views_and_img(article['link'])
+            data = {
+                'domain': 'rtvnp.rs',
+                'url': article['link'],
+                'title': article['title'],
+                'short_summary': article['summary'],
+                # TODO: add adjust for multiple content (index 0,1,2..)
+                # 'description': article['content'][0]['value'],
+                'views': views,
+                'date': datetime.isoformat(article_date),
+                'img': img
 
-        }
-        db.put(data, key=data['url'])
+            }
+            db.put(data, key=data['url'])
 
 # utils
 
