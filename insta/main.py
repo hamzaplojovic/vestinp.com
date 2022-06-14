@@ -94,16 +94,11 @@ cl = Client()
 cl.login(USERNAME, PASSWORD)
 for article in response:
     try:
-        link = StoryLink(webUri=article['url'])
         cl.photo_upload_to_story(
             Path(process_image(article['img'], BeautifulSoup(article['title'], 'lxml').get_text())),
-            links=[link]
+            links=[StoryLink(webUri=article['url'])]
         )
-        link = None
-        print('-------------------------------------')
         print(article['url'])
-        print(article)
-        print('-------------------------------------')
     except Exception as e:
         print(e)
 print('Finished!')
